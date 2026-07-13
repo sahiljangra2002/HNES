@@ -117,6 +117,41 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Message from the President */}
+      {org.president_name && (
+        <section className="py-14 sm:py-20" data-testid="home-president-section">
+          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+            <Reveal>
+              <Card className="card-soft overflow-hidden rounded-2xl">
+                <CardContent className="grid gap-8 p-6 sm:p-10 md:grid-cols-[auto,1fr] md:items-center">
+                  <img
+                    src={resolveImg(org.president_photo)}
+                    alt={`${org.president_name}, ${org.president_role || "President"}`}
+                    loading="lazy"
+                    className="mx-auto h-56 w-44 rounded-2xl border border-border object-cover object-top shadow-md sm:h-64 sm:w-52"
+                    width="208"
+                    height="256"
+                  />
+                  <div>
+                    <p className="text-sm font-semibold uppercase tracking-wider text-accent">
+                      Message from the President
+                    </p>
+                    <Quote className="mt-4 h-7 w-7 text-primary/30" aria-hidden="true" />
+                    <blockquote className="mt-2 max-w-2xl font-heading text-lg leading-relaxed text-foreground/90 sm:text-xl">
+                      {org.president_message}
+                    </blockquote>
+                    <div className="mt-5">
+                      <div className="font-heading text-lg font-bold text-primary">{org.president_name}</div>
+                      <div className="text-sm text-muted-foreground">{org.president_role}</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Reveal>
+          </div>
+        </section>
+      )}
+
       {/* Programs preview */}
       <section className="py-14 sm:py-20">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">

@@ -21,6 +21,13 @@ Donor/volunteer-facing website + lightweight CMS for a registered Delhi NGO (Reg
 - Backend: server.py, seed.py, auth.py, mailer.py, models.py
 - Frontend: src/pages/*, src/pages/admin/*, src/components/*, src/context/SettingsContext.js
 
+## Real photography added (user-uploaded, applied via /app/scripts/apply_content.py)
+- 3 news posts: blood donation camp (13 Jun 2026, Bahadurgarh, poster cover), Rs 51,000 student aid (photo cover + clipping in gallery), talent felicitation (clipping cover)
+- 5 gallery items (Community Events + Education categories) from real photos/clippings
+- President: Geeta Deroliya (Teacher & President) - portrait extracted from blood-camp poster, replaces placeholder president in Team; photo at /api/uploads/president-geeta-deroliya.jpg
+- Homepage: new "Message from the President" section (admin-editable via Site Settings -> Organization -> President block; hidden if president name blank)
+- All uploaded files persisted in /app/backend/uploads/
+
 ## Pending / future
 - Real Razorpay keys + live checkout wiring
 - SendGrid/SMTP credentials from user

@@ -114,6 +114,14 @@ export default function SettingsPage() {
           </div>
           <Field label="Registered address"><Textarea rows={2} value={org.address || ""} onChange={(e) => setOrg("address", e.target.value)} /></Field>
           <Field label="Registration number"><Input value={org.reg_no || ""} onChange={(e) => setOrg("reg_no", e.target.value)} /></Field>
+          <Separator />
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">President block (homepage)</p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="President name"><Input value={org.president_name || ""} onChange={(e) => setOrg("president_name", e.target.value)} data-testid="settings-president-name-input" /></Field>
+            <Field label="President role/title"><Input value={org.president_role || ""} onChange={(e) => setOrg("president_role", e.target.value)} /></Field>
+          </div>
+          <Field label="President photo URL"><Input value={org.president_photo || ""} onChange={(e) => setOrg("president_photo", e.target.value)} placeholder="/api/uploads/... or https://..." /></Field>
+          <Field label="President message (quote on homepage - leave name blank to hide the section)"><Textarea rows={4} value={org.president_message || ""} onChange={(e) => setOrg("president_message", e.target.value)} /></Field>
         </Section>
 
         <div className="space-y-6">
