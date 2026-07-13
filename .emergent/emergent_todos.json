@@ -1,0 +1,34 @@
+[
+  {
+    "content": "Phase 2: Backend - env vars, auth, models, mailer, public+admin routes, seed data",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 2: Frontend core - tokens/fonts, layout (Header/Footer with legal note), API lib",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 2: Public pages - Home, About, Programs+Detail, Gallery, Get Involved, Donate, Blog+Detail, Contact",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 2: Admin CMS - login, dashboard, CRUD screens, inbox, donations log, subscribers",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 2: SEO - meta per page, OG tags, sitemap.xml, robots.txt, schema.org JSON-LD",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 2: All user stories covered in development",
+    "status": "completed"
+  },
+  {
+    "content": "Phase 2: End to End Testing using Testing Agent + fix all issues",
+    "status": "in_progress"
+  },
+  {
+    "content": "Phase 4: README for non-technical staff",
+    "status": "pending"
+  }
+]
