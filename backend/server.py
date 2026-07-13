@@ -5,6 +5,7 @@ import re
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import List, Optional
 
 from dotenv import load_dotenv
 
@@ -22,7 +23,7 @@ from fastapi import (  # noqa: E402
 )
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 from fastapi import APIRouter  # noqa: E402
-from motor.motor_asyncio import AsyncIOMotorClient  # noqa: E402
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa: E402
 from starlette.middleware.cors import CORSMiddleware  # noqa: E402
 
 from auth import create_token, get_current_admin, verify_password  # noqa: E402
@@ -69,10 +70,10 @@ def slugify(text: str) -> str:
     return slug or str(uuid.uuid4())[:8]
 
 
-async def unique_slug(coll, base: str, exclude_id: str = None) -> str:
+async def unique_slug(coll: AsyncIOMotorCollection, base: str, exclude_id: Optional[str] = None) -> str:
     slug, n = base, 1
     while True:
-        query = {"slug": slug}
+        query: dict = {"slug": slug}
         if exclude_id:
             query["id"] = {"$ne": exclude_id}
         if not await coll.find_one(query):
@@ -85,12 +86,12 @@ async def unique_slug(coll, base: str, exclude_id: str = None) -> str:
 # Public endpoints
 # --------------------------------------------------------------------------
 @api.get("/")
-async def root():
+async def root() -> dict:
     return {"message": "Human & Natural Environment Society API", "status": "ok"}
 
 
 @api.get("/settings")
-async def get_settings():
+async def get_settings() -> dict:
     settings = await db.site_settings.find_one({"id": "main"}, NO_ID)
     if not settings:
         raise HTTPException(status_code=404, detail="Settings not found")
@@ -98,12 +99,12 @@ async def get_settings():
 
 
 @api.get("/programs")
-async def list_programs():
+async def list_programs() -> List[dict]:
     return await db.programs.find({}, NO_ID).sort("order", 1).to_list(100)
 
 
 @api.get("/programs/{slug}")
-async def get_program(slug: str):
+async def get_program(slug: str) -> dict:
     program = await db.programs.find_one({"slug": slug}, NO_ID)
     if not program:
         raise HTTPException(status_code=404, detail="Program not found")
@@ -117,8 +118,8 @@ async def list_blog(
     tag: str = Query("", max_length=60),
     page: int = Query(1, ge=1),
     limit: int = Query(9, ge=1, le=50),
-):
-    query = {"published": True}
+) -> dict:
+    query: dict = {"published": True}
     if search:
         safe = re.escape(search)
         query["$or"] = [
@@ -142,13 +143,13 @@ async def list_blog(
 
 
 @api.get("/blog/categories")
-async def blog_categories():
+async def blog_categories() -> List[str]:
     cats = await db.blog_posts.distinct("category", {"published": True})
     return sorted([c for c in cats if c])
 
 
 @api.get("/blog/{slug}")
-async def get_post(slug: str):
+async def get_post(slug: str) -> dict:
     post = await db.blog_posts.find_one({"slug": slug, "published": True}, NO_ID)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
@@ -164,8 +165,8 @@ async def get_post(slug: str):
 
 
 @api.get("/gallery")
-async def list_gallery(category: str = Query("", max_length=60)):
-    query = {}
+async def list_gallery(category: str = Query("", max_length=60)) -> dict:
+    query: dict = {}
     if category:
         query["category"] = category
     items = await db.gallery_items.find(query, NO_ID).sort("created_at", -1).to_list(500)
@@ -174,26 +175,26 @@ async def list_gallery(category: str = Query("", max_length=60)):
 
 
 @api.get("/team")
-async def list_team():
+async def list_team() -> List[dict]:
     return await db.team_members.find({}, NO_ID).sort("order", 1).to_list(100)
 
 
 @api.get("/testimonials")
-async def list_testimonials():
+async def list_testimonials() -> List[dict]:
     return await db.testimonials.find({}, NO_ID).sort("order", 1).to_list(50)
 
 
 @api.get("/milestones")
-async def list_milestones():
+async def list_milestones() -> List[dict]:
     return await db.milestones.find({}, NO_ID).sort("order", 1).to_list(100)
 
 
 @api.get("/careers")
-async def list_careers():
+async def list_careers() -> List[dict]:
     return await db.careers.find({"active": True}, NO_ID).sort("created_at", -1).to_list(50)
 
 
-async def _record_email_status(submission_id: str, sub_doc: dict):
+async def _record_email_status(submission_id: str, sub_doc: dict) -> None:
     kind = sub_doc.get("type", "contact").title()
     sent, detail = await send_notification(
         f"New {kind} submission - {sub_doc.get('name', '')}", submission_email_html(sub_doc)
@@ -204,7 +205,7 @@ async def _record_email_status(submission_id: str, sub_doc: dict):
 
 
 @api.post("/submissions")
-async def create_submission(payload: SubmissionInput, background_tasks: BackgroundTasks):
+async def create_submission(payload: SubmissionInput, background_tasks: BackgroundTasks) -> dict:
     # Honeypot: silently accept but drop obvious bots
     if payload.website:
         return {"success": True, "message": "Thank you! We will get back to you soon."}
@@ -229,7 +230,7 @@ async def create_submission(payload: SubmissionInput, background_tasks: Backgrou
 
 
 @api.post("/newsletter")
-async def subscribe_newsletter(payload: NewsletterInput):
+async def subscribe_newsletter(payload: NewsletterInput) -> dict:
     email = payload.email.lower().strip()
     existing = await db.newsletter_subscribers.find_one({"email": email})
     if existing:
@@ -241,7 +242,7 @@ async def subscribe_newsletter(payload: NewsletterInput):
 
 
 @api.post("/donations")
-async def create_donation(payload: DonationInput):
+async def create_donation(payload: DonationInput) -> dict:
     payment_mode = (os.environ.get("PAYMENT_MODE") or "mock").strip().lower()
     reference = f"MOCK-{uuid.uuid4().hex[:10].upper()}"
     doc = payload.model_dump()
@@ -273,7 +274,7 @@ async def create_donation(payload: DonationInput):
 # Admin endpoints
 # --------------------------------------------------------------------------
 @admin.post("/login")
-async def admin_login(payload: LoginInput):
+async def admin_login(payload: LoginInput) -> dict:
     user = await db.admin_users.find_one({"email": payload.email.lower().strip()})
     if not user or not verify_password(payload.password, user.get("password_hash", "")):
         raise HTTPException(status_code=401, detail="Invalid email or password")
@@ -282,12 +283,12 @@ async def admin_login(payload: LoginInput):
 
 
 @admin.get("/me")
-async def admin_me(current=Depends(get_current_admin)):
+async def admin_me(current: dict = Depends(get_current_admin)) -> dict:
     return current
 
 
 @admin.get("/dashboard")
-async def admin_dashboard(current=Depends(get_current_admin)):
+async def admin_dashboard(current: dict = Depends(get_current_admin)) -> dict:
     new_submissions = await db.submissions.count_documents({"status": "new"})
     totals = {
         "programs": await db.programs.count_documents({}),
@@ -307,14 +308,14 @@ async def admin_dashboard(current=Depends(get_current_admin)):
     return {"totals": totals, "recent_submissions": recent, "email_configured": bool(email_configured())}
 
 
-def _get_collection(ctype: str):
+def _get_collection(ctype: str) -> AsyncIOMotorCollection:
     if ctype not in CONTENT_COLLECTIONS:
         raise HTTPException(status_code=404, detail="Unknown content type")
     return db[CONTENT_COLLECTIONS[ctype]]
 
 
 @admin.get("/content/{ctype}")
-async def admin_list_content(ctype: str, current=Depends(get_current_admin)):
+async def admin_list_content(ctype: str, current: dict = Depends(get_current_admin)) -> List[dict]:
     coll = _get_collection(ctype)
     sort_field = "order" if ctype in ("programs", "team", "milestones", "testimonials") else "created_at"
     direction = 1 if sort_field == "order" else -1
@@ -322,7 +323,9 @@ async def admin_list_content(ctype: str, current=Depends(get_current_admin)):
 
 
 @admin.post("/content/{ctype}")
-async def admin_create_content(ctype: str, payload: dict, current=Depends(get_current_admin)):
+async def admin_create_content(
+    ctype: str, payload: dict, current: dict = Depends(get_current_admin)
+) -> dict:
     coll = _get_collection(ctype)
     payload.pop("_id", None)
     payload["id"] = str(uuid.uuid4())
@@ -339,7 +342,9 @@ async def admin_create_content(ctype: str, payload: dict, current=Depends(get_cu
 
 
 @admin.put("/content/{ctype}/{item_id}")
-async def admin_update_content(ctype: str, item_id: str, payload: dict, current=Depends(get_current_admin)):
+async def admin_update_content(
+    ctype: str, item_id: str, payload: dict, current: dict = Depends(get_current_admin)
+) -> Optional[dict]:
     coll = _get_collection(ctype)
     payload.pop("_id", None)
     payload.pop("id", None)
@@ -355,7 +360,9 @@ async def admin_update_content(ctype: str, item_id: str, payload: dict, current=
 
 
 @admin.delete("/content/{ctype}/{item_id}")
-async def admin_delete_content(ctype: str, item_id: str, current=Depends(get_current_admin)):
+async def admin_delete_content(
+    ctype: str, item_id: str, current: dict = Depends(get_current_admin)
+) -> dict:
     coll = _get_collection(ctype)
     result = await coll.delete_one({"id": item_id})
     if result.deleted_count == 0:
@@ -364,12 +371,14 @@ async def admin_delete_content(ctype: str, item_id: str, current=Depends(get_cur
 
 
 @admin.get("/settings")
-async def admin_get_settings(current=Depends(get_current_admin)):
+async def admin_get_settings(current: dict = Depends(get_current_admin)) -> Optional[dict]:
     return await db.site_settings.find_one({"id": "main"}, NO_ID)
 
 
 @admin.put("/settings")
-async def admin_update_settings(payload: dict, current=Depends(get_current_admin)):
+async def admin_update_settings(
+    payload: dict, current: dict = Depends(get_current_admin)
+) -> Optional[dict]:
     payload.pop("_id", None)
     payload.pop("id", None)
     payload["updated_at"] = now_iso()
@@ -381,9 +390,9 @@ async def admin_update_settings(payload: dict, current=Depends(get_current_admin
 async def admin_list_submissions(
     type: str = Query("", max_length=20),
     status: str = Query("", max_length=20),
-    current=Depends(get_current_admin),
-):
-    query = {}
+    current: dict = Depends(get_current_admin),
+) -> List[dict]:
+    query: dict = {}
     if type:
         query["type"] = type
     if status:
@@ -393,8 +402,8 @@ async def admin_list_submissions(
 
 @admin.patch("/submissions/{submission_id}")
 async def admin_update_submission(
-    submission_id: str, payload: StatusUpdate, current=Depends(get_current_admin)
-):
+    submission_id: str, payload: StatusUpdate, current: dict = Depends(get_current_admin)
+) -> dict:
     result = await db.submissions.update_one({"id": submission_id}, {"$set": {"status": payload.status}})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Submission not found")
@@ -402,7 +411,9 @@ async def admin_update_submission(
 
 
 @admin.delete("/submissions/{submission_id}")
-async def admin_delete_submission(submission_id: str, current=Depends(get_current_admin)):
+async def admin_delete_submission(
+    submission_id: str, current: dict = Depends(get_current_admin)
+) -> dict:
     result = await db.submissions.delete_one({"id": submission_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Submission not found")
@@ -410,17 +421,19 @@ async def admin_delete_submission(submission_id: str, current=Depends(get_curren
 
 
 @admin.get("/donations")
-async def admin_list_donations(current=Depends(get_current_admin)):
+async def admin_list_donations(current: dict = Depends(get_current_admin)) -> List[dict]:
     return await db.donations.find({}, NO_ID).sort("created_at", -1).to_list(1000)
 
 
 @admin.get("/subscribers")
-async def admin_list_subscribers(current=Depends(get_current_admin)):
+async def admin_list_subscribers(current: dict = Depends(get_current_admin)) -> List[dict]:
     return await db.newsletter_subscribers.find({}, NO_ID).sort("created_at", -1).to_list(5000)
 
 
 @admin.delete("/subscribers/{subscriber_id}")
-async def admin_delete_subscriber(subscriber_id: str, current=Depends(get_current_admin)):
+async def admin_delete_subscriber(
+    subscriber_id: str, current: dict = Depends(get_current_admin)
+) -> dict:
     result = await db.newsletter_subscribers.delete_one({"id": subscriber_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Subscriber not found")
@@ -431,7 +444,9 @@ ALLOWED_UPLOAD_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 
 @admin.post("/upload")
-async def admin_upload(file: UploadFile = File(...), current=Depends(get_current_admin)):
+async def admin_upload(
+    file: UploadFile = File(...), current: dict = Depends(get_current_admin)
+) -> dict:
     ext = Path(file.filename or "").suffix.lower()
     if ext not in ALLOWED_UPLOAD_EXT:
         raise HTTPException(status_code=400, detail="Only JPG, PNG, WEBP or GIF images are allowed")
@@ -456,11 +471,11 @@ app.add_middleware(
 
 
 @app.on_event("startup")
-async def on_startup():
+async def on_startup() -> None:
     await seed_database(db)
     logger.info("Startup complete - database seeded if empty")
 
 
 @app.on_event("shutdown")
-async def shutdown_db_client():
+async def shutdown_db_client() -> None:
     client.close()

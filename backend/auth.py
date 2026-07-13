@@ -38,8 +38,9 @@ def create_token(email: str, name: str = "Admin") -> str:
 
 async def get_current_admin(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-):
-    if credentials is None or not credentials.credentials:
+) -> dict:
+    """Validate the Bearer token and return the authenticated admin identity."""
+    if not credentials or not credentials.credentials:
         raise HTTPException(status_code=401, detail="Not authenticated")
     try:
         payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGO])

@@ -5,10 +5,15 @@ import logging
 import os
 import uuid
 from datetime import datetime, timezone
+from typing import Dict, List
+
+from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from auth import hash_password
 
 logger = logging.getLogger("seed")
+
+Doc = Dict[str, object]
 
 
 def _id() -> str:
@@ -107,92 +112,147 @@ DEFAULT_SETTINGS = {
 }
 
 
-def _programs():
+def _build_program(
+    slug: str,
+    title: str,
+    category: str,
+    summary: str,
+    description: str,
+    image_url: str,
+    gallery: List[str],
+    impact_numbers: List[Dict[str, str]],
+    featured: bool,
+    order: int,
+) -> Doc:
+    """Assemble a single program document with a generated id and timestamp."""
+    return {
+        "id": _id(),
+        "slug": slug,
+        "title": title,
+        "category": category,
+        "summary": summary,
+        "description": description,
+        "image_url": image_url,
+        "gallery": gallery,
+        "impact_numbers": impact_numbers,
+        "featured": featured,
+        "order": order,
+        "created_at": _now(),
+    }
+
+
+def _program_tree_plantation() -> Doc:
+    return _build_program(
+        slug="tree-plantation-urban-greening",
+        title="Tree Plantation & Urban Greening",
+        category="Environment",
+        summary="Native-species plantation drives, Miyawaki mini-forests and park restoration across North-West Delhi, with three years of after-care for every sapling.",
+        description="Delhi loses green cover every year to construction and neglect. Our plantation program works with RWAs, schools and the district administration to bring it back - one neighbourhood at a time.\n\nEvery drive begins with a site survey to choose native, climate-suited species such as neem, peepal, amaltas and jamun. Volunteers prepare pits, plant saplings and - most importantly - commit to a three-year care schedule of watering, mulching and tree-guard maintenance. Survival, not just plantation, is our measure of success.\n\nSince 2016 we have planted over 25,000 saplings with a survival rate above 80%, created two Miyawaki-method mini-forests, and restored green belts in more than 15 parks. Schools that join the program receive a 'Green Campus' toolkit so students can adopt and monitor their own trees.",
+        image_url=IMG["planting_hands"],
+        gallery=[IMG["girl_planting"], IMG["sapling_hand"], IMG["watering"], IMG["forest"]],
+        impact_numbers=[
+            {"label": "Saplings planted", "value": "25,000+"},
+            {"label": "Survival rate", "value": "80%"},
+            {"label": "Parks restored", "value": "15+"},
+            {"label": "Mini-forests created", "value": "2"},
+        ],
+        featured=True,
+        order=1,
+    )
+
+
+def _program_water_conservation() -> Doc:
+    return _build_program(
+        slug="water-conservation",
+        title="Water Conservation & Rainwater Harvesting",
+        category="Environment",
+        summary="Rainwater harvesting in schools, pond revival in rural pockets and water-wise awareness campaigns for a water-stressed Delhi.",
+        description="North-West Delhi's groundwater table has been falling for decades. Our water program tackles the crisis from two directions: capturing rain where it falls, and changing daily habits.\n\nWe help schools and community buildings install simple rooftop rainwater harvesting systems, then train caretakers to maintain them. In the rural belt around Ladpur and Kanjhawala, volunteers work with village committees to de-silt and revive traditional ponds (johads) that once recharged local wells.\n\nAlongside the hardware, our 'Har Boond Keemti Hai' (Every Drop Counts) campaign reaches households with practical water-saving methods - from tap aerators to greywater reuse for gardens. Five school systems installed so far harvest an estimated 12 lakh litres of rain every monsoon.",
+        image_url=IMG["water_field"],
+        gallery=[IMG["water_drop"], IMG["dam"], IMG["field_sunset"], IMG["forest"]],
+        impact_numbers=[
+            {"label": "RWH systems installed", "value": "5"},
+            {"label": "Rainwater harvested / yr", "value": "12 lakh L"},
+            {"label": "Ponds under revival", "value": "3"},
+            {"label": "Households reached", "value": "4,000+"},
+        ],
+        featured=True,
+        order=2,
+    )
+
+
+def _program_waste_management() -> Doc:
+    return _build_program(
+        slug="waste-management",
+        title="Waste Management & Clean Colony Drives",
+        category="Environment",
+        summary="Door-to-door segregation awareness, community composting and monthly shramdaan clean-up drives that keep colonies and green spaces waste-free.",
+        description="Clean surroundings are the first step to a healthy community. Our waste program helps colonies move from 'collect and dump' to 'segregate, compost and recycle'.\n\nVolunteers run door-to-door campaigns teaching two-bin segregation, help RWAs set up community composting pits for wet waste, and connect dry-waste collectors with recyclers so that plastic, paper and metal find their way back into the economy instead of landfills.\n\nEvery month, our shramdaan (voluntary labour) drives bring residents, students and municipal workers together to clean parks, market areas and drains. Since 2018, more than 120 such drives have removed an estimated 60 tonnes of waste - and, more importantly, built local pride that keeps the spaces clean afterwards.",
+        image_url=IMG["recycling"],
+        gallery=[IMG["bins"], IMG["volunteers_boxes"], IMG["community"]],
+        impact_numbers=[
+            {"label": "Clean-up drives", "value": "120+"},
+            {"label": "Waste diverted", "value": "60 tonnes"},
+            {"label": "Colonies segregating", "value": "18"},
+            {"label": "Compost pits set up", "value": "25"},
+        ],
+        featured=True,
+        order=3,
+    )
+
+
+def _program_community_education() -> Doc:
+    return _build_program(
+        slug="community-education",
+        title="Community Education & Awareness",
+        category="Community Welfare",
+        summary="Evening study support for first-generation learners, environment clubs in schools, and awareness camps on health, hygiene and citizen rights.",
+        description="Environmental change begins in classrooms and community halls. Our education program works where the need is greatest - with children of daily-wage families and government school students in North-West Delhi.\n\nVolunteer-led evening study circles help first-generation learners keep pace with schoolwork, while our Eco-Club program in schools turns students into environment ambassadors who run their own campus plantation, waste and water projects.\n\nFor adults, we organise awareness camps on health and hygiene, government welfare schemes, and digital literacy. During winter, the program extends to welfare distribution - blankets, books and stationery - for families who need them most.",
+        image_url=IMG["classroom"],
+        gallery=[IMG["books_kids"], IMG["helping_hands"], IMG["children_smile"]],
+        impact_numbers=[
+            {"label": "Children in study circles", "value": "350+"},
+            {"label": "School eco-clubs", "value": "12"},
+            {"label": "Awareness camps", "value": "75+"},
+            {"label": "Welfare kits distributed", "value": "2,500+"},
+        ],
+        featured=True,
+        order=4,
+    )
+
+
+def _program_wildlife_protection() -> Doc:
+    return _build_program(
+        slug="wildlife-habitat-protection",
+        title="Wildlife & Habitat Protection",
+        category="Environment",
+        summary="Protecting urban wildlife - birds, pollinators and small mammals - through habitat creation, water bowls in summer, and anti-poaching awareness.",
+        description="Cities are habitats too. Delhi's birds, bees, butterflies and small mammals are under pressure from vanishing green cover and rising heat. This program gives them a fighting chance.\n\nVolunteers install and maintain water bowls and feeders across parks during Delhi's brutal summers, build nest boxes for sparrows and owls, and plant native flowering species that support pollinators. Our butterfly-and-bee garden patches in five parks now host dozens of pollinator species.\n\nWe also run awareness sessions with school children on co-existing with urban wildlife - from snake rescue helplines to why feeding monkeys harms them - and support the forest department in reporting illegal bird trapping.",
+        image_url=IMG["fox"],
+        gallery=[IMG["leopard"], IMG["mist_forest"], IMG["sunbeam"]],
+        impact_numbers=[
+            {"label": "Water points maintained", "value": "200+"},
+            {"label": "Nest boxes installed", "value": "450"},
+            {"label": "Pollinator gardens", "value": "5"},
+            {"label": "Students sensitised", "value": "6,000+"},
+        ],
+        featured=False,
+        order=5,
+    )
+
+
+def _programs() -> List[Doc]:
+    """All seed programs, in display order."""
     return [
-        {
-            "id": _id(), "slug": "tree-plantation-urban-greening",
-            "title": "Tree Plantation & Urban Greening",
-            "category": "Environment",
-            "summary": "Native-species plantation drives, Miyawaki mini-forests and park restoration across North-West Delhi, with three years of after-care for every sapling.",
-            "description": "Delhi loses green cover every year to construction and neglect. Our plantation program works with RWAs, schools and the district administration to bring it back - one neighbourhood at a time.\n\nEvery drive begins with a site survey to choose native, climate-suited species such as neem, peepal, amaltas and jamun. Volunteers prepare pits, plant saplings and - most importantly - commit to a three-year care schedule of watering, mulching and tree-guard maintenance. Survival, not just plantation, is our measure of success.\n\nSince 2016 we have planted over 25,000 saplings with a survival rate above 80%, created two Miyawaki-method mini-forests, and restored green belts in more than 15 parks. Schools that join the program receive a 'Green Campus' toolkit so students can adopt and monitor their own trees.",
-            "image_url": IMG["planting_hands"],
-            "gallery": [IMG["girl_planting"], IMG["sapling_hand"], IMG["watering"], IMG["forest"]],
-            "impact_numbers": [
-                {"label": "Saplings planted", "value": "25,000+"},
-                {"label": "Survival rate", "value": "80%"},
-                {"label": "Parks restored", "value": "15+"},
-                {"label": "Mini-forests created", "value": "2"},
-            ],
-            "featured": True, "order": 1, "created_at": _now(),
-        },
-        {
-            "id": _id(), "slug": "water-conservation",
-            "title": "Water Conservation & Rainwater Harvesting",
-            "category": "Environment",
-            "summary": "Rainwater harvesting in schools, pond revival in rural pockets and water-wise awareness campaigns for a water-stressed Delhi.",
-            "description": "North-West Delhi's groundwater table has been falling for decades. Our water program tackles the crisis from two directions: capturing rain where it falls, and changing daily habits.\n\nWe help schools and community buildings install simple rooftop rainwater harvesting systems, then train caretakers to maintain them. In the rural belt around Ladpur and Kanjhawala, volunteers work with village committees to de-silt and revive traditional ponds (johads) that once recharged local wells.\n\nAlongside the hardware, our 'Har Boond Keemti Hai' (Every Drop Counts) campaign reaches households with practical water-saving methods - from tap aerators to greywater reuse for gardens. Five school systems installed so far harvest an estimated 12 lakh litres of rain every monsoon.",
-            "image_url": IMG["water_field"],
-            "gallery": [IMG["water_drop"], IMG["dam"], IMG["field_sunset"], IMG["forest"]],
-            "impact_numbers": [
-                {"label": "RWH systems installed", "value": "5"},
-                {"label": "Rainwater harvested / yr", "value": "12 lakh L"},
-                {"label": "Ponds under revival", "value": "3"},
-                {"label": "Households reached", "value": "4,000+"},
-            ],
-            "featured": True, "order": 2, "created_at": _now(),
-        },
-        {
-            "id": _id(), "slug": "waste-management",
-            "title": "Waste Management & Clean Colony Drives",
-            "category": "Environment",
-            "summary": "Door-to-door segregation awareness, community composting and monthly shramdaan clean-up drives that keep colonies and green spaces waste-free.",
-            "description": "Clean surroundings are the first step to a healthy community. Our waste program helps colonies move from 'collect and dump' to 'segregate, compost and recycle'.\n\nVolunteers run door-to-door campaigns teaching two-bin segregation, help RWAs set up community composting pits for wet waste, and connect dry-waste collectors with recyclers so that plastic, paper and metal find their way back into the economy instead of landfills.\n\nEvery month, our shramdaan (voluntary labour) drives bring residents, students and municipal workers together to clean parks, market areas and drains. Since 2018, more than 120 such drives have removed an estimated 60 tonnes of waste - and, more importantly, built local pride that keeps the spaces clean afterwards.",
-            "image_url": IMG["recycling"],
-            "gallery": [IMG["bins"], IMG["volunteers_boxes"], IMG["community"]],
-            "impact_numbers": [
-                {"label": "Clean-up drives", "value": "120+"},
-                {"label": "Waste diverted", "value": "60 tonnes"},
-                {"label": "Colonies segregating", "value": "18"},
-                {"label": "Compost pits set up", "value": "25"},
-            ],
-            "featured": True, "order": 3, "created_at": _now(),
-        },
-        {
-            "id": _id(), "slug": "community-education",
-            "title": "Community Education & Awareness",
-            "category": "Community Welfare",
-            "summary": "Evening study support for first-generation learners, environment clubs in schools, and awareness camps on health, hygiene and citizen rights.",
-            "description": "Environmental change begins in classrooms and community halls. Our education program works where the need is greatest - with children of daily-wage families and government school students in North-West Delhi.\n\nVolunteer-led evening study circles help first-generation learners keep pace with schoolwork, while our Eco-Club program in schools turns students into environment ambassadors who run their own campus plantation, waste and water projects.\n\nFor adults, we organise awareness camps on health and hygiene, government welfare schemes, and digital literacy. During winter, the program extends to welfare distribution - blankets, books and stationery - for families who need them most.",
-            "image_url": IMG["classroom"],
-            "gallery": [IMG["books_kids"], IMG["helping_hands"], IMG["children_smile"]],
-            "impact_numbers": [
-                {"label": "Children in study circles", "value": "350+"},
-                {"label": "School eco-clubs", "value": "12"},
-                {"label": "Awareness camps", "value": "75+"},
-                {"label": "Welfare kits distributed", "value": "2,500+"},
-            ],
-            "featured": True, "order": 4, "created_at": _now(),
-        },
-        {
-            "id": _id(), "slug": "wildlife-habitat-protection",
-            "title": "Wildlife & Habitat Protection",
-            "category": "Environment",
-            "summary": "Protecting urban wildlife - birds, pollinators and small mammals - through habitat creation, water bowls in summer, and anti-poaching awareness.",
-            "description": "Cities are habitats too. Delhi's birds, bees, butterflies and small mammals are under pressure from vanishing green cover and rising heat. This program gives them a fighting chance.\n\nVolunteers install and maintain water bowls and feeders across parks during Delhi's brutal summers, build nest boxes for sparrows and owls, and plant native flowering species that support pollinators. Our butterfly-and-bee garden patches in five parks now host dozens of pollinator species.\n\nWe also run awareness sessions with school children on co-existing with urban wildlife - from snake rescue helplines to why feeding monkeys harms them - and support the forest department in reporting illegal bird trapping.",
-            "image_url": IMG["fox"],
-            "gallery": [IMG["leopard"], IMG["mist_forest"], IMG["sunbeam"]],
-            "impact_numbers": [
-                {"label": "Water points maintained", "value": "200+"},
-                {"label": "Nest boxes installed", "value": "450"},
-                {"label": "Pollinator gardens", "value": "5"},
-                {"label": "Students sensitised", "value": "6,000+"},
-            ],
-            "featured": False, "order": 5, "created_at": _now(),
-        },
+        _program_tree_plantation(),
+        _program_water_conservation(),
+        _program_waste_management(),
+        _program_community_education(),
+        _program_wildlife_protection(),
     ]
 
 
-def _blog_posts():
+def _blog_posts() -> List[Doc]:
     return [
         {
             "id": _id(), "slug": "1500-saplings-rohini-plantation-drive",
@@ -237,7 +297,7 @@ def _blog_posts():
     ]
 
 
-def _gallery():
+def _gallery() -> List[Doc]:
     items = [
         ("Monsoon plantation drive, Rohini", "Plantation Drives", IMG["girl_planting"], "Rohini, August 2025"),
         ("Sapling ready for planting", "Plantation Drives", IMG["sapling_hand"], "Ladpur nursery, July 2025"),
@@ -273,7 +333,7 @@ def _team():
     ]
 
 
-def _milestones():
+def _milestones() -> List[Doc]:
     rows = [
         ("2016", "Society registered", "Human & Natural Environment Society registered under the Societies Registration Act, 1860 on 11 August 2016."),
         ("2017", "First plantation drives", "Weekend drives in Ladpur and Kanjhawala plant the first 1,000 saplings with local volunteers."),
@@ -290,7 +350,7 @@ def _milestones():
     ]
 
 
-def _testimonials():
+def _testimonials() -> List[Doc]:
     rows = [
         ("Our park was a dumping ground for years. HNES volunteers turned it into a green space our children actually use. They didn't just plant trees - they kept coming back to care for them.", "Suresh Gupta", "RWA President, Rohini"),
         ("The rainwater harvesting system and the training our staff received have been excellent. Our eco-club students now maintain the logbook themselves.", "Mrs. Anita Rani", "Principal, Government School"),
@@ -303,7 +363,7 @@ def _testimonials():
     ]
 
 
-def _careers():
+def _careers() -> List[Doc]:
     return [
         {
             "id": _id(), "title": "Field Coordinator - Plantation Program", "type": "Volunteer (Part-time)",
@@ -326,7 +386,7 @@ def _careers():
     ]
 
 
-async def seed_database(db):
+async def seed_database(db: AsyncIOMotorDatabase) -> None:
     """Seed collections that are empty. Never overwrites existing data."""
     # Admin user (upsert-if-missing so password changes in DB survive restarts)
     admin_email = (os.environ.get("ADMIN_EMAIL") or "hnes2016@gmail.com").strip()

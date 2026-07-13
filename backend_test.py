@@ -91,6 +91,58 @@ class NGOBackendTester:
         success, programs = self.run_test("List programs", "GET", "programs", 200,
                                          check_response=lambda r: isinstance(r, list) and len(r) >= 5)
         
+        # SEED REGRESSION TEST: Verify exactly 5 programs with correct structure
+        if success and programs:
+            print(f"\n   🔍 SEED REGRESSION: Verifying 5 programs with correct structure...")
+            expected_slugs = [
+                "tree-plantation-urban-greening",
+                "water-conservation",
+                "waste-management",
+                "community-education",
+                "wildlife-habitat-protection"
+            ]
+            
+            # Check we have at least 5 programs
+            if len(programs) < 5:
+                print(f"   ❌ Expected at least 5 programs, got {len(programs)}")
+                self.failed_tests.append(f"Seed regression: Expected at least 5 programs, got {len(programs)}")
+            else:
+                print(f"   ✅ Found {len(programs)} programs")
+                
+                # Check each program has required fields
+                required_fields = ['slug', 'title', 'category', 'summary', 'description', 
+                                 'image_url', 'gallery', 'impact_numbers', 'featured', 'order']
+                
+                for program in programs[:5]:  # Check first 5
+                    missing_fields = [f for f in required_fields if f not in program]
+                    if missing_fields:
+                        print(f"   ❌ Program {program.get('slug')} missing fields: {missing_fields}")
+                        self.failed_tests.append(f"Seed regression: Program missing fields {missing_fields}")
+                    
+                    # Verify gallery is a list
+                    if not isinstance(program.get('gallery'), list):
+                        print(f"   ❌ Program {program.get('slug')} gallery is not a list")
+                        self.failed_tests.append(f"Seed regression: gallery not a list")
+                    
+                    # Verify impact_numbers is a list of dicts with label and value
+                    if not isinstance(program.get('impact_numbers'), list):
+                        print(f"   ❌ Program {program.get('slug')} impact_numbers is not a list")
+                        self.failed_tests.append(f"Seed regression: impact_numbers not a list")
+                    elif len(program.get('impact_numbers', [])) > 0:
+                        first_impact = program['impact_numbers'][0]
+                        if 'label' not in first_impact or 'value' not in first_impact:
+                            print(f"   ❌ Program {program.get('slug')} impact_numbers missing label/value")
+                            self.failed_tests.append(f"Seed regression: impact_numbers missing label/value")
+                
+                # Check expected slugs are present
+                actual_slugs = [p.get('slug') for p in programs]
+                for expected_slug in expected_slugs:
+                    if expected_slug not in actual_slugs:
+                        print(f"   ❌ Expected slug '{expected_slug}' not found")
+                        self.failed_tests.append(f"Seed regression: Expected slug '{expected_slug}' not found")
+                    else:
+                        print(f"   ✅ Found expected slug: {expected_slug}")
+        
         if success and programs:
             # Test program detail
             first_program = programs[0]
@@ -272,28 +324,48 @@ class NGOBackendTester:
     def test_admin_endpoints_without_auth(self):
         """Test that admin endpoints reject requests without token"""
         print("\n" + "="*60)
-        print("TESTING ADMIN ENDPOINTS WITHOUT AUTH")
+        print("TESTING ADMIN ENDPOINTS WITHOUT AUTH (CRITICAL - AUTH CODE REFACTORED)")
         print("="*60)
 
         # Temporarily clear token
         temp_token = self.token
         self.token = None
 
-        self.run_test("Dashboard without auth", "GET", "admin/dashboard", 401)
+        # Test 1: No Authorization header at all
+        self.run_test("Dashboard without auth header", "GET", "admin/dashboard", 401)
+        self.run_test("Admin /me without auth header", "GET", "admin/me", 401)
         self.run_test("Settings without auth", "GET", "admin/settings", 401)
         self.run_test("Content list without auth", "GET", "admin/content/programs", 401)
+
+        # Test 2: Malformed/garbage Bearer token (should return 401, not 500)
+        print("\n   Testing malformed tokens (must return 401, not 500):")
+        malformed_headers = {'Authorization': 'Bearer garbage_token_xyz123'}
+        self.run_test("Dashboard with garbage token", "GET", "admin/dashboard", 401, headers=malformed_headers)
+        self.run_test("Admin /me with garbage token", "GET", "admin/me", 401, headers=malformed_headers)
+
+        # Test 3: Empty Bearer value (should return 401)
+        empty_bearer_headers = {'Authorization': 'Bearer '}
+        self.run_test("Dashboard with empty Bearer value", "GET", "admin/dashboard", 401, headers=empty_bearer_headers)
+        self.run_test("Admin /me with empty Bearer value", "GET", "admin/me", 401, headers=empty_bearer_headers)
+
+        # Test 4: Just "Bearer" without any value
+        no_value_headers = {'Authorization': 'Bearer'}
+        self.run_test("Dashboard with 'Bearer' only", "GET", "admin/dashboard", 401, headers=no_value_headers)
 
         # Restore token
         self.token = temp_token
 
     def test_admin_dashboard(self):
-        """Test admin dashboard"""
+        """Test admin dashboard and /me endpoint with valid token"""
         print("\n" + "="*60)
-        print("TESTING ADMIN DASHBOARD")
+        print("TESTING ADMIN DASHBOARD & /ME WITH VALID TOKEN")
         print("="*60)
 
         self.run_test("Get dashboard stats", "GET", "admin/dashboard", 200,
                      check_response=lambda r: 'totals' in r and 'recent_submissions' in r and 'email_configured' in r)
+        
+        self.run_test("Get admin /me", "GET", "admin/me", 200,
+                     check_response=lambda r: 'email' in r and r.get('email') == self.admin_email)
 
     def test_admin_content_crud(self):
         """Test admin content CRUD operations"""
