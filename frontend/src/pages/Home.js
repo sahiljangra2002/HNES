@@ -14,7 +14,7 @@ import { api, resolveImg, formatDate } from "@/lib/api";
 import { useSettings } from "@/context/SettingsContext";
 
 const HERO_IMG =
-  "https://images.unsplash.com/photo-1564665619149-8ec9aa5c3d0d?crop=entropy&cs=srgb&fm=jpg&q=85&w=1400";
+  ""C:\Users\Rakesh\Downloads\WhatsApp Image 2026-07-14 at 11.36.38 AM.jpeg"";
 
 export default function Home() {
   const { settings } = useSettings();
