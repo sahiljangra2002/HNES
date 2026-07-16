@@ -311,6 +311,13 @@ def _gallery() -> List[Doc]:
         ("Book distribution day", "Education", IMG["books_kids"], "Government school, 2025"),
         ("Winter welfare distribution", "Community Events", IMG["volunteers_boxes"], "January 2025"),
         ("Community volunteers after a drive", "Community Events", IMG["helping_hands"], "Volunteer meet, 2025"),
+        ("Plantation drive at the Delhi Police cyber helpdesk", "Plantation Drives", "/api/uploads/gallery-plantation-police-helpdesk.jpg", "Saplings handed over with Delhi Police staff and neighbourhood families"),
+        ("Plant gifted between fellow social workers", "Plantation Drives", "/api/uploads/gallery-plant-handover-social-workers.jpg", "A sapling exchanged as a token of goodwill between community volunteers"),
+        ("Sapling distributed to a local resident", "Plantation Drives", "/api/uploads/gallery-sapling-distribution-resident.jpg", "Door-to-door sapling distribution in the neighbourhood"),
+        ("Voluntary blood donation camp - International Women's Day", "Community Events", "/api/uploads/gallery-blood-donation-womens-day.jpg", "Swaichhik Raktdaan Shivir held on 8 March with the Red Cross Society and NSS volunteers"),
+        ("Honoured at a Milan Samaroh community function", "Community Events", "/api/uploads/gallery-milan-samaroh-honour.jpg", "Our society recognised with a memento at a community Milan Samaroh"),
+        ("Certificate of appreciation presented to the society", "Community Events", "/api/uploads/gallery-certificate-appreciation.jpg", "A prashasti patra received in recognition of ongoing community service"),
+        ("Community function attended by our volunteers", "Community Events", "/api/uploads/gallery-community-function-stage.jpg", "Members on stage at a local community celebration"),
     ]
     return [
         {"id": _id(), "title": t, "category": c, "image_url": u, "caption": cap, "created_at": _now()}
