@@ -46,7 +46,7 @@ export default function Programs() {
                         <div className="grid md:grid-cols-5">
                           <img
   src={p.title?.includes("Tree Plantation") 
-    ? "PASTE_YOUR_COPIED_CLOUDINARY_URL_HERE" 
+    ? "https://i.ibb.co/7tTsVSDS/Whats-App-Image-2026-07-20-at-12-06-17-PM.jpg" 
     : resolveImg(p.image_url)}
   alt={p.title || "Program image"}
   loading="lazy"
