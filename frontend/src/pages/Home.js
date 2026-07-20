@@ -13,7 +13,7 @@ import { Seo } from "@/components/Seo";
 import { api, resolveImg, formatDate } from "@/lib/api";
 import { useSettings } from "@/context/SettingsContext";
 
-const HERO_IMG = "https://res.cloudinary.com/your_cloud_name/image/upload/v1234567890/your_uploaded_image.jpg";
+const HERO_IMG = "https://i.ibb.co/hxKmGK9p/Whats-App-Image-2026-07-14-at-11-36-37-AM.jpg";
 
 export default function Home() {
   const { settings } = useSettings();
