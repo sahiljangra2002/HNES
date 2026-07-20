@@ -19,11 +19,11 @@ export const Footer = () => {
   
   // Add your actual Instagram URL inside the quotes on line 21
   const socials = [
-    { href: https://www.facebook.com/share/19DVStf5c7/, icon: Facebook, label: "Facebook" },
-    { href: https://www.instagram.com/hnes.india?igsh=ZHc1MzBvNWk5Zm9h&utm_source=qr", icon: Instagram, label: "Instagram" },
+    { href: "https://www.facebook.com/share/19DVStf5c7/", icon: Facebook, label: "Facebook" },
+    { href: "https://www.instagram.com/hnes.india?igsh=ZHc1MzBvNWk5Zm9h&utm_source=qr", icon: Instagram, label: "Instagram" },
     { href: social.twitter, icon: Twitter, label: "Twitter / X" },
     { href: social.linkedin, icon: Linkedin, label: "LinkedIn" },
-    { href: https://www.youtube.com/@HNES2016, icon: Youtube, label: "YouTube" },
+    { href: "https://www.youtube.com/@HNES2016", icon: Youtube, label: "YouTube" },
   ].filter((s) => s.href);
 
   return (
