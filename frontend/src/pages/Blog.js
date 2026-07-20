@@ -108,7 +108,7 @@ export default function Blog() {
                             p.title?.toLowerCase().includes("narela")
                               ? "YOUR_TREE_PLANTING_OR_NARELA_CLOUDINARY_URL"
                               : p.title?.toLowerCase().includes("sapling")
-                              ? "https://i.ibb.co/hRpyLk1x/Whats-App-Image-2026-07-20-at-12-29-38-PM.jpg"
+                              ? "https://res.cloudinary.com/your-cloud/image/upload/v1234/image_123.jpg)"
                               : p.title?.toLowerCase().includes("rainwater")
                               ? "YOUR_RAINWATER_CLOUDINARY_URL"
                               : resolveImg(p.cover_image)
