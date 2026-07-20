@@ -14,8 +14,7 @@ import { api, resolveImg, formatDate } from "@/lib/api";
 import { useSettings } from "@/context/SettingsContext";
 
 const HERO_IMG =
-  "C:\Users\Rakesh\Downloads\WhatsApp Image 2026-07-14 at 11.36.38 AM.jpeg";
-
+  "https://res.cloudinary.com/your_cloud_name/image/upload/v1234567890/your_uploaded_image.jpg";
 export default function Home() {
   const { settings } = useSettings();
   const [programs, setPrograms] = useState(null);
