@@ -110,7 +110,7 @@ export default function Blog() {
                               : p.title?.toLowerCase().includes("sapling")
                               ? "https://res.cloudinary.com/your-cloud/image/upload/v1234/image_123.jpg)"
                               : p.title?.toLowerCase().includes("rainwater")
-                              ? "YOUR_RAINWATER_CLOUDINARY_URL"
+                              ? "https://i.ibb.co/k6BBS309/Whats-App-Image-2026-07-20-at-12-34-47-PM.jpg"
                               : resolveImg(p.cover_image)
                           }
                           alt={p.title || "Blog post image"}
