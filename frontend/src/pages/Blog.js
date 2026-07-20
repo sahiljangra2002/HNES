@@ -50,7 +50,7 @@ export default function Blog() {
       />
       <section className="hero-gradient noise-overlay">
         <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
-          <p className="text-sm font-semibold uppercase tracking-wider text-accent">News &amp; stories</p>
+          <p className="text-sm font-semibold uppercase tracking-wider text-accent">News & stories</p>
           <h1 className="mt-2 font-heading text-3xl font-bold tracking-tight text-primary sm:text-4xl lg:text-5xl">
             From the field
           </h1>
@@ -104,10 +104,18 @@ export default function Blog() {
                     <Link to={`/blog/${p.slug}`} className="group block h-full" data-testid="blog-post-card">
                       <Card className="card-soft h-full overflow-hidden rounded-2xl transition-transform duration-200 group-hover:-translate-y-1">
                         <img
-                          src={resolveImg(p.cover_image)}
-                          alt={p.title}
+                          src={
+                            p.title?.toLowerCase().includes("narela")
+                              ? "YOUR_TREE_PLANTING_OR_NARELA_CLOUDINARY_URL"
+                              : p.title?.toLowerCase().includes("sapling")
+                              ? "YOUR_SAPLING_ROHINI_CLOUDINARY_URL"
+                              : p.title?.toLowerCase().includes("rainwater")
+                              ? "YOUR_RAINWATER_CLOUDINARY_URL"
+                              : resolveImg(p.cover_image)
+                          }
+                          alt={p.title || "Blog post image"}
                           loading="lazy"
-                          className="h-44 w-full object-cover"
+                          className="h-44 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                           width="400"
                           height="176"
                         />
