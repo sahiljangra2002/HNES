@@ -45,15 +45,15 @@ export default function Programs() {
                       <Card className="card-soft overflow-hidden rounded-2xl transition-transform duration-200 group-hover:-translate-y-0.5">
                         <div className="grid md:grid-cols-5">
                           <img
-                            src={p.title?.includes("Tree Plantation") 
-                              ? "https://i.ibb.co/hxKmGk9p/Whats-App-Image-2026-07-14-at-11-36-37-AM.jpg" 
-                              : resolveImg(p.image_url)}
-                            alt={p.title || "Program image"}
-                            loading="lazy"
-                            className="h-56 w-full object-cover md:col-span-2 md:h-full"
-                            width="480"
-                            height="260"
-                          />
+  src={p.title?.includes("Tree Plantation") 
+    ? "PASTE_YOUR_COPIED_CLOUDINARY_URL_HERE" 
+    : resolveImg(p.image_url)}
+  alt={p.title || "Program image"}
+  loading="lazy"
+  className="h-56 w-full object-cover md:col-span-2 md:h-full"
+  width="480"
+  height="260"
+/>
                           <CardContent className="p-6 md:col-span-3 md:p-8">
                             <Badge variant="secondary">{p.category}</Badge>
                             <h2 className="mt-3 font-heading text-xl font-semibold text-primary group-hover:underline sm:text-2xl">
