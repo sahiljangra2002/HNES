@@ -18,9 +18,10 @@ export const Footer = () => {
   const social = settings?.social || {};
   
   // Add your actual Instagram URL inside the quotes on line 21
-  const socials = [
-    { href: "https://www.facebook.com/share/19DVStf5c7/", icon: Facebook, label: "Facebook" },
-   { href: "https://www.instagram.com/hnes.india/", icon: Instagram, label: "Instagram" },
+ const socials = [
+    // Replace "YOUR_FACEBOOK_USERNAME" with your actual page handle
+    { href: "https://www.facebook.com/YOUR_FACEBOOK_USERNAME/", icon: Facebook, label: "Facebook" },
+    { href: "https://www.instagram.com/hnes.india/", icon: Instagram, label: "Instagram" },
     { href: social.twitter, icon: Twitter, label: "Twitter / X" },
     { href: social.linkedin, icon: Linkedin, label: "LinkedIn" },
     { href: "https://www.youtube.com/@HNES2016", icon: Youtube, label: "YouTube" },
