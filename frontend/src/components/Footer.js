@@ -16,9 +16,11 @@ export const Footer = () => {
   const { settings } = useSettings();
   const org = settings?.org || {};
   const social = settings?.social || {};
+  
+  // Add your actual Instagram URL inside the quotes on line 21
   const socials = [
     { href: social.facebook, icon: Facebook, label: "Facebook" },
-    { href: social.instagram, icon: Instagram, label: "Instagram" },
+    { href: social.instagram || "https://www.instagram.com/hnes.india?igsh=ZHc1MzBvNWk5Zm9h&utm_source=qr", icon: Instagram, label: "Instagram" },
     { href: social.twitter, icon: Twitter, label: "Twitter / X" },
     { href: social.linkedin, icon: Linkedin, label: "LinkedIn" },
     { href: social.youtube, icon: Youtube, label: "YouTube" },
