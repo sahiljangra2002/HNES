@@ -18,14 +18,14 @@ export default function Programs() {
   return (
     <div>
       <Seo
-        title="Our Work &amp; Programs"
-        description="Tree plantation, water conservation, waste management, community education and wildlife protection programs run by Human &amp; Natural Environment Society in Delhi."
+        title="Our Work & Programs"
+        description="Tree plantation, water conservation, waste management, community education and wildlife protection programs run by Human & Natural Environment Society in Delhi."
       />
       <section className="hero-gradient noise-overlay">
         <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-wider text-accent">Our work</p>
           <h1 className="mt-2 font-heading text-3xl font-bold tracking-tight text-primary sm:text-4xl lg:text-5xl">
-            Programs that restore &amp; uplift
+            Programs that restore & uplift
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
             Every program is community-led, measured for impact, and open to volunteers and supporters. Explore
@@ -48,7 +48,7 @@ export default function Programs() {
                             src={p.title?.includes("Tree Plantation") 
                               ? "https://i.ibb.co/hxKmGk9p/Whats-App-Image-2026-07-14-at-11-36-37-AM.jpg" 
                               : resolveImg(p.image_url)}
-                            alt={p.title}
+                            alt={p.title || "Program image"}
                             loading="lazy"
                             className="h-56 w-full object-cover md:col-span-2 md:h-full"
                             width="480"
