@@ -13,8 +13,8 @@ import { Seo } from "@/components/Seo";
 import { api, resolveImg, formatDate } from "@/lib/api";
 import { useSettings } from "@/context/SettingsContext";
 
-const HERO_IMG =
-  "https://res.cloudinary.com/your_cloud_name/image/upload/v1234567890/your_uploaded_image.jpg";
+const HERO_IMG = "https://res.cloudinary.com/your_cloud_name/image/upload/v1234567890/your_uploaded_image.jpg";
+
 export default function Home() {
   const { settings } = useSettings();
   const [programs, setPrograms] = useState(null);
