@@ -18,8 +18,8 @@ export default function Programs() {
   return (
     <div>
       <Seo
-        title="Our Work & Programs"
-        description="Tree plantation, water conservation, waste management, community education and wildlife protection programs run by Human & Natural Environment Society in Delhi."
+        title="Our Work &amp; Programs"
+        description="Tree plantation, water conservation, waste management, community education and wildlife protection programs run by Human &amp; Natural Environment Society in Delhi."
       />
       <section className="hero-gradient noise-overlay">
         <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
@@ -45,9 +45,14 @@ export default function Programs() {
                       <Card className="card-soft overflow-hidden rounded-2xl transition-transform duration-200 group-hover:-translate-y-0.5">
                         <div className="grid md:grid-cols-5">
                           <img
-                           src={p.title?.includes("Tree Plantation") 
+                            src={p.title?.includes("Tree Plantation") 
                               ? "https://i.ibb.co/hxKmGk9p/Whats-App-Image-2026-07-14-at-11-36-37-AM.jpg" 
                               : resolveImg(p.image_url)}
+                            alt={p.title}
+                            loading="lazy"
+                            className="h-56 w-full object-cover md:col-span-2 md:h-full"
+                            width="480"
+                            height="260"
                           />
                           <CardContent className="p-6 md:col-span-3 md:p-8">
                             <Badge variant="secondary">{p.category}</Badge>
