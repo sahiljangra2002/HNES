@@ -46,6 +46,13 @@ dump.rdb
 .DS_Store
 *.pem
 
+# Secrets - never commit these
+.env
+backend/.env
+frontend/.env
+.env.local
+.env.*.local
+
 # Python
 __pycache__/
 *pyc*

@@ -25,6 +25,8 @@ from fastapi.staticfiles import StaticFiles  # noqa: E402
 from fastapi import APIRouter  # noqa: E402
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection  # noqa: E402
 from starlette.middleware.cors import CORSMiddleware  # noqa: E402
+import cloudinary  # noqa: E402
+import cloudinary.uploader  # noqa: E402
 
 from auth import create_token, get_current_admin, verify_password  # noqa: E402
 from mailer import email_configured, send_notification, submission_email_html  # noqa: E402
@@ -40,6 +42,13 @@ db = client[os.environ["DB_NAME"]]
 
 UPLOADS_DIR = ROOT_DIR / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
+
+# If CLOUDINARY_URL is set (production), uploaded images are stored permanently
+# on Cloudinary instead of the local disk, which is wiped on every restart/deploy
+# on most hosts. Local disk stays as a fallback for local development.
+CLOUDINARY_ENABLED = bool(os.environ.get("CLOUDINARY_URL"))
+if CLOUDINARY_ENABLED:
+    cloudinary.config(cloudinary_url=os.environ["CLOUDINARY_URL"], secure=True)
 
 app = FastAPI(title="Human & Natural Environment Society API")
 app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
@@ -454,6 +463,13 @@ async def admin_upload(
     if len(content) > 8 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="Image must be under 8 MB")
     fname = f"{uuid.uuid4().hex}{ext}"
+
+    if CLOUDINARY_ENABLED:
+        result = cloudinary.uploader.upload(
+            content, public_id=f"hnes/{uuid.uuid4().hex}", resource_type="image"
+        )
+        return {"url": result["secure_url"]}
+
     (UPLOADS_DIR / fname).write_bytes(content)
     return {"url": f"/api/uploads/{fname}"}
 
