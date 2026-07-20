@@ -45,7 +45,7 @@ export default function Programs() {
                       <Card className="card-soft overflow-hidden rounded-2xl transition-transform duration-200 group-hover:-translate-y-0.5">
                         <div className="grid md:grid-cols-5">
                           <img
-  src={p.title?.includes("Tree Plantation") 
+  src={p.title?.toLowerCase().includes("tree") 
     ? "https://i.ibb.co/7tTsVSDS/Whats-App-Image-2026-07-20-at-12-06-17-PM.jpg" 
     : resolveImg(p.image_url)}
   alt={p.title || "Program image"}
