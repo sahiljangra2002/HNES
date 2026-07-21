@@ -23,8 +23,6 @@ export default function Contact() {
   const socials = [
     { href: social.facebook, icon: Facebook, label: "Facebook" },
     { href: social.instagram, icon: Instagram, label: "Instagram" },
-    { href: social.twitter, icon: Twitter, label: "Twitter / X" },
-    { href: social.linkedin, icon: Linkedin, label: "LinkedIn" },
     { href: social.youtube, icon: Youtube, label: "YouTube" },
   ].filter((s) => s.href);
 
