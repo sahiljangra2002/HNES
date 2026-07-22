@@ -109,15 +109,15 @@ export default function SettingsPage() {
           <Field label="Vision"><Textarea rows={2} value={org.vision || ""} onChange={(e) => setOrg("vision", e.target.value)} /></Field>
           <Field label="Our story"><Textarea rows={5} value={org.story || ""} onChange={(e) => setOrg("story", e.target.value)} /></Field>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Public email"><Input value={org.email || ""} onChange={(e) => setOrg("email", e.target.value)} /></Field>
-            <Field label="Public phone"><Input value={org.phone || ""} onChange={(e) => setOrg("phone", e.target.value)} /></Field>
+            <Field label="Public email"><Input value={org.email || ""} onChange={(e) => setOrg("hnes2016@gmail.com", e.target.value)} /></Field>
+            <Field label="Public phone"><Input value={org.phone || ""} onChange={(e) => setOrg("+91-8595765789", e.target.value)} /></Field>
           </div>
           <Field label="Registered address"><Textarea rows={2} value={org.address || ""} onChange={(e) => setOrg("address", e.target.value)} /></Field>
           <Field label="Registration number"><Input value={org.reg_no || ""} onChange={(e) => setOrg("reg_no", e.target.value)} /></Field>
           <Separator />
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">President block (homepage)</p>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="President name"><Input value={org.president_name || ""} onChange={(e) => setOrg("president_name", e.target.value)} data-testid="settings-president-name-input" /></Field>
+            <Field label="President name"><Input value={org.president_name || ""} onChange={(e) => setOrg("Geeta Devi", e.target.value)} data-testid="settings-president-name-input" /></Field>
             <Field label="President role/title"><Input value={org.president_role || ""} onChange={(e) => setOrg("president_role", e.target.value)} /></Field>
           </div>
           <Field label="President photo URL"><Input value={org.president_photo || ""} onChange={(e) => setOrg("president_photo", e.target.value)} placeholder="/api/uploads/... or https://..." /></Field>
@@ -148,11 +148,11 @@ export default function SettingsPage() {
 
           <Section title="Donations" description="Bank details shown on the Donate page, preset amounts, and the 80G tax note.">
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Account name"><Input value={bank.account_name || ""} onChange={(e) => setBank("account_name", e.target.value)} /></Field>
-              <Field label="Bank name"><Input value={bank.bank_name || ""} onChange={(e) => setBank("bank_name", e.target.value)} /></Field>
-              <Field label="Branch"><Input value={bank.branch || ""} onChange={(e) => setBank("branch", e.target.value)} /></Field>
-              <Field label="Account number"><Input value={bank.account_number || ""} onChange={(e) => setBank("account_number", e.target.value)} data-testid="settings-account-number-input" /></Field>
-              <Field label="IFSC"><Input value={bank.ifsc || ""} onChange={(e) => setBank("ifsc", e.target.value)} /></Field>
+              <Field label="Account name"><Input value={bank.account_name || ""} onChange={(e) => setBank("Human & Natural Environment Society", e.target.value)} /></Field>
+              <Field label="Bank name"><Input value={bank.bank_name || ""} onChange={(e) => setBank("Canara Bank of India", e.target.value)} /></Field>
+              <Field label="Branch"><Input value={bank.branch || ""} onChange={(e) => setBank("Kanjhawala", e.target.value)} /></Field>
+              <Field label="Account number"><Input value={bank.account_number || ""} onChange={(e) => setBank("120001719119", e.target.value)} data-testid="settings-account-number-input" /></Field>
+              <Field label="IFSC"><Input value={bank.ifsc || ""} onChange={(e) => setBank("CNRB0006378", e.target.value)} /></Field>
               <Field label="Cheque payable to"><Input value={bank.cheque_payable_to || ""} onChange={(e) => setBank("cheque_payable_to", e.target.value)} /></Field>
             </div>
             <Field label="Note shown under bank details"><Textarea rows={2} value={bank.note || ""} onChange={(e) => setBank("note", e.target.value)} /></Field>
